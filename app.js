@@ -1,41 +1,61 @@
 // Etsy Listing Booster AI - Main App Logic
 
-const API_KEY = "YOUR_GEMINI_API_KEY"; // Add your Gemini API key here
+const API_KEY = "YOUR_API_KEY"; // Add your Gemini API key here
 
 async function generate() {
   const input = document.getElementById("input").value;
 
   document.getElementById("result").innerText =
-    "Generating optimized Etsy listing...";
+    "AI is optimizing your Etsy listing...";
 
-  // 🔮 Replace this section with your Google AI Studio Gemini API call
-  const fakeAIOutput = `
+  const prompt = `
+You are an Etsy SEO expert and conversion copywriter.
+
+Rewrite the following Etsy listing for maximum visibility and sales.
+
+Return exactly in this format:
+
 🧠 OPTIMIZED TITLE:
-Boho Neutral Wall Art Printable | Minimal Cottage Decor | Instant Download
+...
 
-🏷️ ETSY TAGS:
-boho wall art, printable decor, neutral home decor, minimalist print, cottage style art...
+🏷️ ETSY TAGS (13):
+...
 
 📝 DESCRIPTION:
-Transform your space with this calming neutral boho print...
+...
 
-🔥 HOOK IDEAS:
-- "Your walls are missing this vibe…"
-- "Minimal decor, maximum aesthetic"
+🔥 HOOKS (5):
+...
+
+INPUT:
+${input}
 `;
 
-  setTimeout(() => {
-    document.getElementById("result").innerText = fakeAIOutput;
-    document.getElementById("paywall").classList.remove("hidden");
-  }, 900);
-}
+  const response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: prompt }]
+          }
+        ]
+      })
+    }
+  );
 
-function upgrade() {
-  window.open("https://your-gumroad-link.com", "_blank");
+  const data = await response.json();
+
+  const output =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+    "No response. Check API key.";
+
+  document.getElementById("result").innerText = output;
+
+  document.getElementById("paywall").classList.remove("hidden");
 }
 
 // Event listener for generate button
 document.getElementById("generate-btn")?.addEventListener("click", generate);
-
-// Event listener for upgrade button
-document.getElementById("upgrade-btn")?.addEventListener("click", upgrade);
