@@ -1,12 +1,22 @@
 // Etsy Listing Booster AI - Main App Logic
 
 const API_KEY = "YOUR_API_KEY"; // Add your Gemini API key here
+let freeUses = 0;
 
 async function generate() {
   const input = document.getElementById("input").value;
 
   document.getElementById("result").innerText =
     "AI is optimizing your Etsy listing...";
+
+  freeUses++;
+
+  if (freeUses > 2) {
+    document.getElementById("result").innerText =
+      "Free limit reached. Unlock unlimited optimizations.";
+    document.getElementById("paywall").classList.remove("hidden");
+    return;
+  }
 
   const prompt = `
 You are an Etsy SEO expert and conversion copywriter.
